@@ -31,8 +31,8 @@ for sub_name, sub_df in sub_dfs.items():
         config.train_data.video_path = f"{DATA_PATH}/{sub_name}/480p_frames/{video_name}"
         if not os.path.exists(config.train_data.video_path):
             raise FileNotFoundError(config.train_data.video_path)
-        config.train_data.num_frames = len(glob(f"{config.train_data.video_path}/*.jpg"))
-        config.train_data.frame_rate = 1
+        # config.train_data.num_frames = len(glob(f"{config.train_data.video_path}/*.jpg"))
+        # config.train_data.frame_rate = 1
 
         config.train_data.prompt = train_prompt
         config.validation_data.prompts = edited_prompts
