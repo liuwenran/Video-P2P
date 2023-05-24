@@ -39,15 +39,16 @@ def main(
     image_path: str,
     prompt: str,
     prompts: Tuple[str],
-    eq_params: Dict,
     save_name: str,
     is_word_swap: bool,
+    eq_params: Dict = None,
     blend_word: Tuple[str] = None,
     cross_replace_steps: float = 0.2,
     self_replace_steps: float = 0.5,
     video_len: int = 8,
     fast: bool = False,
     mixed_precision: str = 'fp32',
+    frame_start_ind: int = 0,
 ):
     output_folder = os.path.join(pretrained_model_path, 'results')
     if fast:
@@ -58,7 +59,8 @@ def main(
         save_name_2 = os.path.join(output_folder, '{}.gif'.format(save_name))
     if blend_word:
         blend_word = (((blend_word[0],), (blend_word[1],)))
-    eq_params = dict(eq_params)
+    if eq_params is not None:
+        eq_params = dict(eq_params)
     prompts = list(prompts)
     cross_replace_steps = {'default_': cross_replace_steps,}
 
@@ -384,7 +386,7 @@ def main(
         return controller
 
 
-    def load_512_seq(image_path, left=0, right=0, top=0, bottom=0, n_sample_frame=video_len, sampling_rate=1):
+    def load_512_seq(image_path, left=0, right=0, top=0, bottom=0, n_sample_frame=video_len, sampling_rate=1, frame_start_ind=0):
         images = []
         for file in sorted(os.listdir(image_path)):
             images.append(file)
@@ -394,7 +396,7 @@ def main(
             raise ValueError
         frames = []
         for index in range(n_sample_frame):
-            p = os.path.join(image_path, images[index])
+            p = os.path.join(image_path, images[frame_start_ind + index])
             image = np.array(Image.open(p).convert("RGB"))
             h, w, c = image.shape
             left = min(left, w-1)
@@ -574,10 +576,10 @@ def main(
             # bar.close()
             return uncond_embeddings_list
         
-        def invert(self, image_path: str, prompt: str, offsets=(0,0,0,0), num_inner_steps=10, early_stop_epsilon=1e-5, verbose=False):
+        def invert(self, image_path: str, prompt: str, offsets=(0,0,0,0), num_inner_steps=10, early_stop_epsilon=1e-5, verbose=False, frame_start_ind=0):
             self.init_prompt(prompt)
             ptp_utils.register_attention_control(self.model, None)
-            image_gt = load_512_seq(image_path, *offsets)
+            image_gt = load_512_seq(image_path, *offsets, frame_start_ind=frame_start_ind)
             if verbose:
                 print("DDIM inversion...")
             image_rec, ddim_latents = self.ddim_inversion(image_gt)
@@ -586,10 +588,10 @@ def main(
             uncond_embeddings = self.null_optimization(ddim_latents, num_inner_steps, early_stop_epsilon)
             return (image_gt, image_rec), ddim_latents[-1], uncond_embeddings
 
-        def invert_(self, image_path: str, prompt: str, offsets=(0,0,0,0), num_inner_steps=10, early_stop_epsilon=1e-5, verbose=False):
+        def invert_(self, image_path: str, prompt: str, offsets=(0,0,0,0), num_inner_steps=10, early_stop_epsilon=1e-5, verbose=False, frame_start_ind=0):
             self.init_prompt(prompt)
             ptp_utils.register_attention_control(self.model, None)
-            image_gt = load_512_seq(image_path, *offsets)
+            image_gt = load_512_seq(image_path, *offsets, frame_start_ind=frame_start_ind)
             if verbose:
                 print("DDIM inversion...")
             image_rec, ddim_latents = self.ddim_inversion(image_gt)
@@ -614,9 +616,9 @@ def main(
     ldm_stable.enable_xformers_memory_efficient_attention()
 
     if fast:
-        (image_gt, image_enc), x_t, uncond_embeddings = null_inversion.invert_(image_path, prompt, offsets=(0,0,0,0), verbose=True)
+        (image_gt, image_enc), x_t, uncond_embeddings = null_inversion.invert_(image_path, prompt, offsets=(0,0,0,0), verbose=True, frame_start_ind=frame_start_ind)
     else:
-        (image_gt, image_enc), x_t, uncond_embeddings = null_inversion.invert(image_path, prompt, offsets=(0,0,0,0), verbose=True)
+        (image_gt, image_enc), x_t, uncond_embeddings = null_inversion.invert(image_path, prompt, offsets=(0,0,0,0), verbose=True, frame_start_ind=frame_start_ind)
 
     ##### load uncond #####
     # uncond_embeddings_load = np.load(uncond_embeddings_path)

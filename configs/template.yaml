@@ -1,9 +1,9 @@
-pretrained_model_path: "/data/stable-diffusion/stable-diffusion-v1-5"
-output_dir: "./outputs/bird-forest"
+pretrained_model_path: "/mnt/petrelfs/liuwenran/repos/diffusers/resources/stable-diffusion-v1-5"
+output_dir: "./outputs/bmx-rider"
 
 train_data:
-  video_path: "./data/bird_forest"
-  prompt: "a bird flying in the forest"
+  video_path: "/mnt/petrelfs/liuwenran/datasets/loveu-tgve-2023/DAVIS_480p/480p_frames/bmx-rider"
+  prompt: "A person does a trick on a BMX bike at a skatepark."
   n_sample_frames: 32
   width: 512
   height: 512
@@ -12,7 +12,7 @@ train_data:
 
 validation_data:
   prompts:
-    - "a bird flying in the forest"
+    - "A person does a trick on a unicycle at a skatepark."
   video_length: 32
   width: 512
   height: 512
@@ -25,7 +25,7 @@ learning_rate: 3e-5
 train_batch_size: 1
 max_train_steps: 500
 checkpointing_steps: 1000
-validation_steps: 600
+validation_steps: 500
 trainable_modules:
   - "attn1.to_q"
   - "attn2.to_q"

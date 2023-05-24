@@ -1,0 +1,15 @@
+pretrained_model_path: "./outputs/loveu-tgve-2023/DAVIS_480p/bmx-rider"
+image_path: "/mnt/petrelfs/liuwenran/datasets/loveu-tgve-2023/DAVIS_480p/480p_frames/bmx-rider"
+prompt: "A person does a trick on a BMX bike at a skatepark."
+prompts:
+  - "A person does a trick on a BMX bike at a skatepark."
+  - "A person does a trick on a BMX bike at a skatepark, grayscale."
+eq_params:
+  words:
+    - "grayscale"
+  values:
+    - 3
+save_name: "style/v1"
+video_len: 32
+is_word_swap: False
+frame_start_ind: 0

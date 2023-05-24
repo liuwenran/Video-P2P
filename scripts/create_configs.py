@@ -20,12 +20,12 @@ for sub_name, sub_df in sub_dfs.items():
         config = OmegaConf.load("./configs/template.yaml")
         video_name = row['Video name']
         train_prompt = row['Our GT caption']
-        edited_prompts = {x.split(" ")[0].lower(): str(row[x]).strip() for x in [
+        edited_prompts = [str(row[x]).strip() for x in [
             "Style Change Caption",
             "Object Change Caption",
             "Background Change Caption",
             "Multiple Changes Caption"
-        ]}
+        ]]
 
         config.pretrained_model_path = PRETRAINED_MODEL_PATH
         config.train_data.video_path = f"{DATA_PATH}/{sub_name}/480p_frames/{video_name}"

@@ -1,3 +1,5 @@
 /outputs
 **/__pycache__
 configs/loveu-tgve-2023
+configs/loveu-tgve-2023-p2p
+configs/loveu-tgve-2023-p2p-frameind
